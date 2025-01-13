@@ -1,0 +1,5 @@
+pexpect
+json2html
+pywebview
+pyelftools
+python-ptrace
