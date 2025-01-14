@@ -110,7 +110,7 @@ def runner(file_path, max_length, title, trace_type, save_json, unpack):
         trace_type (str): Type of trace output ("short" or "long").
         save_json (bool): Whether to save the analysis result as JSON.
         unpack (bool): Whether to attempt unpacking UPX.
-    """
+    """ 
     if os.path.exists(file_path):
 
         static_analysis(file_path, save_json, unpack)
@@ -135,9 +135,11 @@ def main():
 
             [Another ELF Analysis Framework]
 ''',
-        epilog="Nyxelf simplifies static and dynamic analysis of ELF binaries, enabling you to extract valuable insights effortlessly.\n"
-            "Use it for vulnerability assessments, unpacking, syscall tracing, and memory analysis.\n"
-            "Combine powerful tools with an intuitive interface for effective analysis workflows.\n\n"
+            epilog=
+            "Nyxelf simplifies static and dynamic analysis of ELF binaries,\n"
+            "enabling you to extract valuable insights effortlessly.\n"
+            "And can be used for vulnerability assessments, unpacking,\n"
+            "syscall tracing, and memory analysis.\n\n"
             "Examples:\n"
             "  Analyze an ELF file statically and dynamically:\n"
             "    python3 nyxelf.py --file path/example.elf --json --unpack\n\n"
