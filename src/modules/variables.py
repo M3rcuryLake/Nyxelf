@@ -8,11 +8,11 @@ def str_break(string):
 
     """Breaks a string into chunks of 20 characters for readability."""
 
-    if len(string)>20:
-        spaced_string = []
-        for _ in range(0, len(string), 20):
-            spaced_string.append(string[_:_+20])
+    spaced_string = []
+    for _ in range(0, len(string), 20):
+        spaced_string.append(string[_:_+20])
 
+    
     return ' '.join(spaced_string)
 
 
