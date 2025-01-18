@@ -121,3 +121,6 @@ Happy analyzing!
 - Disassemble Pyinstaller files
 - Add Effective Logging
 
+## Star History
+
+[![Star History Chart](https://api.star-history.com/svg?repos=m3rcurylake/nyxelf&type=Date)](https://star-history.com/#m3rcurylake/nyxelf&Date)
