@@ -1,28 +1,22 @@
 
+
 # Nyxelf
-![GitHub License](https://img.shields.io/github/license/m3rcurylake/nyxelf) ![GitHub Created At](https://img.shields.io/github/created-at/m3rcurylake/nyxelf) ![GitHub last commit](https://img.shields.io/github/last-commit/m3rcurylake/nyxelf) ![GitHub commit activity](https://img.shields.io/github/commit-activity/t/m3rcurylake/nyxelf) ![GitHub Issues](https://img.shields.io/github/issues/M3rcurylake/nyxelf) ![GitHub Repo stars](https://img.shields.io/github/stars/M3rcurylake/nyxelf)
+  
+![Static Badge](https://img.shields.io/badge/made_by-m3rcurylake-orange?style=for-the-badge) ![GitHub License](https://img.shields.io/github/license/m3rcurylake/nyxelf?style=for-the-badge) ![GitHub Created At](https://img.shields.io/github/created-at/m3rcurylake/nyxelf?style=for-the-badge) ![GitHub last commit](https://img.shields.io/github/last-commit/m3rcurylake/nyxelf?style=for-the-badge) ![GitHub commit activity](https://img.shields.io/github/commit-activity/t/m3rcurylake/nyxelf?style=for-the-badge) ![GitHub Issues](https://img.shields.io/github/issues/M3rcurylake/nyxelf?style=for-the-badge)  ![GitHub Repo stars](https://img.shields.io/github/stars/M3rcurylake/nyxelf)
 
-
+<table>
+<tr>
+<td>
+<div align='center'>
+  
+### _About_
+  
 Nyxelf is a powerful tool for analyzing malicious Linux ELF binaries, offering both **static** and **dynamic** analysis. It combines tools like `readelf`, `objdump`, and `pyelftools` for static analysis with a custom sandbox for dynamic analysis in a controlled environment using QEMU, a minimal Buildroot-generated image, and `strace`. With Nyxelf, you can gain deep insights into executable files, including unpacking, syscall tracing, and process/file activity monitoring, all presented through an intuitive GUI powered by `pywebview`. 
 
-Json files and other logs are saved to `/data`, while the file-system and kernel image is saved to `/sandbox`.  
-
-
-## System Dependencies:
-
-**Install required packages**: Ensure you have python3 and python-pip installed and set to path and run the following commands, 
-
-```bash
-sudo apt install qemu-kvm libvirt-daemon-system libvirt-clients bridge-utils virt-manager e2tools -y
-git clone https://github.com/m3rcurylake/nyxelf.git
-cd nyxelf && pip install -r requirements.txt
-```
-
-After everything is completely installed, you can run Nyxelf as following:
-
-```bash
-python3 nyxelf.py --help
-```
+</div>
+</table>
+</tr>
+</td> 
 
 ## Features:
 
@@ -41,10 +35,33 @@ python3 nyxelf.py --help
   - JSON output for automated workflows.
   - Adjustable syscall trace verbosity and string length filtering.
 
+> [!NOTE]
+> JSON files and other logs are saved to `/data`, while the file-system and kernel image is saved to `/sandbox`. 
+
+
+## System Dependencies:
+
+**Install required packages**: Ensure you have python3 and python-pip installed and set to path and run the following commands, 
+
+```bash
+sudo apt install qemu-kvm libvirt-daemon-system libvirt-clients bridge-utils virt-manager e2tools -y
+git clone https://github.com/m3rcurylake/nyxelf.git
+cd nyxelf && pip install -r requirements.txt
+```
+
+After everything is completely installed, you can run Nyxelf as following:
+
+```bash
+python3 nyxelf.py --help
+```
+
 
 ## Usage
+
+To start analysing binaries, refer to the following help menu, or move to the project directory and type `python nyxelf.py --file FILE` in the terminal for a quick start, where `FILE` is the target binary. The output will be displayed in a new pywebview GUI window.
+
 ```
->> python3 Nyxelf.py [-h] [--unpack] [--json] --file FILE [--short] [--length LENGTH]
+python nyxelf.py [-h] [--unpack] [--json] --file FILE [--short] [--length LENGTH]
 
  _____  ___    ___  ___   ___  ___    _______   ___         _______
 ("   \|"  \  |"  \/"  | |"  \/"  |  /"     "| |"  |       /"     "|
@@ -84,7 +101,7 @@ Happy analyzing!
 
 ### File Structure
 ```
-.
+Nyxelf/
 ├── data
 ├── frontend
 │   ├── assets
@@ -114,13 +131,15 @@ Happy analyzing!
 
 ## Roadmap
 
-- Decompiler and Disassembler Support
-- Network Analysis
-- Better UI and Optimisation
-- Anti anti-debugging for ptrace etc.
-- Disassemble Pyinstaller files
-- Add Effective Logging
+- [ ] Decompiler and Disassembler Support
+- [ ] Network Analysis
+- [ ] Better UI and Optimisation
+- [ ] Anti anti-debugging for ptrace etc.
+- [ ] Disassemble Pyinstaller files
+- [ ] Add Effective Logging
 
-## Star History
+## License
+This project is licensed under the [MIT](https://choosealicense.com/licenses/mit/) License - see the [LICENSE.md](https://github.com/m3rcurylake/nyxelf/LICENSE.md) file for details
 
-[![Star History Chart](https://api.star-history.com/svg?repos=m3rcurylake/nyxelf&type=Date)](https://star-history.com/#m3rcurylake/nyxelf&Date)
+
+
