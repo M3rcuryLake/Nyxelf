@@ -7,6 +7,7 @@ def decompile(file):
     cfg = proj.analyses.CFGFast(normalize=True)
     main = proj.kb.functions['main']
     dec = proj.analyses.Decompiler(main, cfg=cfg.model)
+    print('[*] Generated C - Lang Pseudocode')
 
     return dec.codegen.text
 
@@ -45,6 +46,7 @@ def disassem_vars(file):
                     int_val = struct.unpack("<I", val)[0]
                     var_str.append(f"/* Address: {hex(addr)} (.data)-> Value: {int_val} */")
                     addr += 4
+    print('[*] Grabbed Assembly Instructions')
     return '\n'.join(var_str)
 
 def construct_gen(file):

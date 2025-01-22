@@ -4,6 +4,7 @@ import argparse
 import webview
 from json2html import json2html
 
+from src.constructor import body
 from src.sandbox import session, ext_copy
 from src.static_analysis import data
 from src.trace_parser import parser, init_parser
@@ -39,7 +40,10 @@ def static_analysis(file_path, save_json, unpack):
 </head>
 <body>
   <h1>Static Analysis</h1>
-  <a href='./dynamic.html'><div>Dynamic Analysis</div></a>
+   <div class = 'linkbox'>
+  <a href='./disassm.html' class = 'link'>Disassembly</a>
+  <a href='./dynamic.html' class = 'link'>Dynamic Analysis</a>
+  </div>
   {html_report}
 </body>
 </html>
@@ -76,17 +80,49 @@ def dynamic_analysis(file_path, max_length, trace_type, save_json, sandbox = 'sa
 <head>
   <meta charset="UTF-8" />
   <title>Dynamic Analysis: {file_path}</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <link rel="stylesheet" type="text/css" href="styles/static.css" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <link rel="icon" href="favicon.png">
 </head>
 <body>
   <h1>Dynamic Analysis</h1>
-  <a href='./static.html'><div>Static Analysis</div></a>
+  <div class = 'linkbox'>
+  <a href='./static.html' class = 'link'>Static Analysis</a>
+  <a href='./disassm.html' class = 'link'>Disassembly</a>
+  </div> 
   {html_report}
 </body>
 </html>
 ''')
+
+def disassemble(file):
+    """
+    Perform static analysis on the given file and generate an HTML report.
+
+    Args:
+        file_path (str): Path to the file to be analyzed.
+        save_json (bool): Whether to save the analysis result as JSON.
+        unpack (bool): Whether to attempt unpacking UPX.
+    """
+
+    with open("frontend/disassm.html", 'w') as html_file:
+        html_file.write(f'''
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<link rel="stylesheet" href="https://unpkg.com/@highlightjs/cdn-assets@11.9.0/styles/atom-one-dark-reasonable.css">
+<script src="https://unpkg.com/@highlightjs/cdn-assets@11.9.0/highlight.min.js"></script>
+<script src="https://unpkg.com/@highlightjs/cdn-assets@11.9.0/languages/x86asm.min.js"></script>
+<script>hljs.highlightAll();</script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Disassembly</title>
+  <link rel="stylesheet" type="text/css" href="styles/disassembly.css" /> <!-- Link your CSS file here -->
+</head>
+{body(file)}
+</html>    
+''')
+
 
 def show_analysis_window(file_path, title):
     """
@@ -115,6 +151,7 @@ def runner(file_path, max_length, title, trace_type, save_json, unpack):
 
         static_analysis(file_path, save_json, unpack)
         dynamic_analysis(file_path, max_length, trace_type, save_json)
+        disassemble(file_path)
         show_analysis_window(file_path, title)
     else:
         print("[#] Critical Error : File Not Found")

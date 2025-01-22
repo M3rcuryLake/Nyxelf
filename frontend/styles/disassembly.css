@@ -60,7 +60,7 @@ code {
   padding: 15px;
   border-radius: 8px;
   font-family: 'Fira Code', Courier, monospace;
-  font-size: 15px;
+  font-size: 18px;
   line-height: 1.6;
   white-space: pre;
 }
@@ -69,7 +69,7 @@ h2 {
   font-family: 'Nunito', Arial, sans-serif;
   font-size: 18px;
   color: #5a5a89;
-  margin-bottom: 10px;
+  margin-bottom: 20px;
   text-align: center;
 }
 h1 {
@@ -111,4 +111,8 @@ h1 {
   margin: 20px 0 80px 0;
 }
 
-
+pre {
+  min-height: 96%; 
+  background-color: #282c34;
+  border-radius: 10px
+}

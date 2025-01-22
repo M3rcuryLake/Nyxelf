@@ -153,4 +153,26 @@ th {
   text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
 }
 
+.link {
+  font-family: 'Nunito', sans-serif; /* Clean and modern font */
+  font-size: 20px; /* Large size for prominence */
+  font-weight: 700; /* Bold to make it stand out */
+  color: #8e44ad;  /* Dark gray color for elegance */
+  text-align: center; /* Center align the heading */
+  text-decoration: underline;
+  letter-spacing: 1px; /* Slight spacing between letters */
+  line-height: 1.2; /* Tight line height for compactness */
+  text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.1), 0 0 25px rgba(255, 0, 0, 0.3); /* Multi-layered shadow for depth */
+  margin: 20px 0; /* Margin around the heading */
+  padding: 10px 20px; /* Padding for extra spacing around the text */
+  border-radius: 10px; /* Rounded corners for a soft look */
+  transform: scale(1.05); /* Slightly enlarged text for added focus */
+  transition: transform 0.3s ease, text-shadow 0.3s ease; /* Smooth transition on hover */
+}
+
+.linkbox{
+  text-align: center;
+  margin: 20px 0 80px 0;
+}
+
 /* Optional rounded corners for table */

@@ -1,14 +1,15 @@
 from elftools.elf.elffile import ELFFile
 from capstone import *
 
-def disassemble_elf(filename, arch, mode):
+def disassemble_elf(filename):
     '''
-    usage : disassemble_elf(filename, CS_ARCH_X86, CS_MODE_64)
+    usage : disassemble_elf(filename)
     '''
     opc_list = []
     with open(filename, "rb") as f:
         elf = ELFFile(f)
-        
+        arch = CS_ARCH_X86
+        mode = CS_MODE_64 
         # disassm sections to find the .text section
         for section in elf.iter_sections():
             if section.name == ".text":  
