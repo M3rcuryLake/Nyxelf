@@ -1,0 +1,118 @@
+/* General styling for the page */
+@font-face {
+    font-family: Nunito;
+    src: url(../assets/Nunito-Regular.ttf);
+}
+
+@font-face {
+    font-family: BebasNeue;
+    src: url(../assets/BebasNeue-Regular.ttf);
+}
+
+body{
+  overflow-x: hidden;
+  font-family: 'Poppins', Arial, sans-serif;
+  justify-content: center;
+  align-items: center;
+  background: linear-gradient(135deg, #f3e6ff, #e8dbfc); 
+}
+
+.sudo {
+  margin: 0;
+  padding: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Layout container */
+.container {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  width: 90%;
+  max-width: 1800px;
+}
+
+/* Style for each column */
+.column {
+  background-color: #ffffff;
+  border: 1px solid #ddd;
+  border-radius: 12px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  max-width: 100%;
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.column:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* Code block styling */
+code {
+  display: block;
+  background-color: #1e1e2f;
+  color: #d4d4ff;
+  padding: 15px;
+  border-radius: 8px;
+  font-family: 'Fira Code', Courier, monospace;
+  font-size: 18px;
+  line-height: 1.6;
+  white-space: pre;
+}
+
+h2 {
+  font-family: 'Nunito', Arial, sans-serif;
+  font-size: 18px;
+  color: #5a5a89;
+  margin-bottom: 20px;
+  text-align: center;
+}
+h1 {
+  font-family: 'BebasNeue', sans-serif; /* Clean and modern font */
+  font-size: 50px; /* Large size for prominence */
+  font-weight: 700; /* Bold to make it stand out */
+  color: #4a4a4a; /* Dark gray color for elegance */
+  text-align: center; /* Center align the heading */
+  text-decoration: underline;
+  letter-spacing: 2px; /* Slight spacing between letters */
+  line-height: 1.2; /* Tight line height for compactness */
+  text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.1), 0 0 25px rgba(255, 0, 0, 0.3); /* Multi-layered shadow for depth */
+  margin: 20px 0; /* Margin around the heading */
+  padding: 10px 20px; /* Padding for extra spacing around the text */
+  border-radius: 10px; /* Rounded corners for a soft look */
+  transform: scale(1.05); /* Slightly enlarged text for added focus */
+  transition: transform 0.3s ease, text-shadow 0.3s ease; /* Smooth transition on hover */
+}
+
+.link {
+  font-family: 'Nunito', sans-serif; /* Clean and modern font */
+  font-size: 20px; /* Large size for prominence */
+  font-weight: 700; /* Bold to make it stand out */
+  color: #8e44ad;  /* Dark gray color for elegance */
+  text-align: center; /* Center align the heading */
+  text-decoration: underline;
+  letter-spacing: 1px; /* Slight spacing between letters */
+  line-height: 1.2; /* Tight line height for compactness */
+  text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.1), 0 0 25px rgba(255, 0, 0, 0.3); /* Multi-layered shadow for depth */
+  margin: 20px 0; /* Margin around the heading */
+  padding: 10px 20px; /* Padding for extra spacing around the text */
+  border-radius: 10px; /* Rounded corners for a soft look */
+  transform: scale(1.05); /* Slightly enlarged text for added focus */
+  transition: transform 0.3s ease, text-shadow 0.3s ease; /* Smooth transition on hover */
+}
+
+.linkbox{
+  text-align: center;
+  margin: 20px 0 80px 0;
+}
+
+pre {
+  min-height: 96%; 
+  background-color: #282c34;
+  border-radius: 10px
+}
