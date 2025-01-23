@@ -1,5 +1,3 @@
-
-
 # Nyxelf
   
 ![Static Badge](https://img.shields.io/badge/made_by-m3rcurylake-orange?style=for-the-badge) ![GitHub License](https://img.shields.io/github/license/m3rcurylake/nyxelf?style=for-the-badge) ![GitHub Created At](https://img.shields.io/github/created-at/m3rcurylake/nyxelf?style=for-the-badge) ![GitHub last commit](https://img.shields.io/github/last-commit/m3rcurylake/nyxelf?style=for-the-badge) ![GitHub commit activity](https://img.shields.io/github/commit-activity/t/m3rcurylake/nyxelf?style=for-the-badge) ![GitHub Issues](https://img.shields.io/github/issues/M3rcurylake/nyxelf?style=for-the-badge)  ![GitHub Repo stars](https://img.shields.io/github/stars/M3rcurylake/nyxelf)
@@ -11,7 +9,7 @@
   
 ### _About_
   
-Nyxelf is a powerful tool for analyzing malicious Linux ELF binaries, offering both **static** and **dynamic** analysis. It combines tools like `readelf`, `objdump`, and `pyelftools` for static analysis with a custom sandbox for dynamic analysis in a controlled environment using QEMU, a minimal Buildroot-generated image, and `strace`. With Nyxelf, you can gain deep insights into executable files, including unpacking, syscall tracing, and process/file activity monitoring, all presented through an intuitive GUI powered by `pywebview`. 
+Nyxelf is a powerful tool for analyzing malicious Linux ELF binaries, offering both **static** and **dynamic** analysis. It combines tools like `readelf`, `objdump`, and `pyelftools` for static analysis with a custom sandbox for dynamic analysis in a controlled environment using QEMU, a minimal Buildroot-generated image, and `strace`. Also it decompiles binary data to Assembly and C like pseudocode using `capstone` and `angr`. With Nyxelf, you can gain deep insights into executable files, including unpacking, syscall tracing, and process/file activity monitoring, all presented through an intuitive GUI powered by `pywebview`. 
 
 </div>
 </table>
@@ -29,6 +27,11 @@ Nyxelf is a powerful tool for analyzing malicious Linux ELF binaries, offering b
   - Run binaries in a secure QEMU-based sandbox.
   - Record process activity, syscalls, and file interactions with `strace`.
   - Supports custom verbosity for syscall tracing.
+ 
+- **Decompilation**:
+  - Decompiles binary to Assembly and C like pseudocode using `capstone` and `angr`.
+  - Tries to retrive variable data from `.rodata` and `.data` sections.
+  - Uses `highlightjs`  CDNs for syntax highlighting.
 
 - **Other Features**:
   -  Optional automatic UPX unpacking.
@@ -103,12 +106,15 @@ Happy analyzing!
 ```
 Nyxelf/
 ├── data
+│   └── readme.md
 ├── frontend
 │   ├── assets
 │   │   ├── BebasNeue-Regular.ttf
 │   │   └── Nunito-Regular.ttf
 │   └── styles
+│       ├── disassembly.css
 │       └── static.css
+├── LICENSE
 ├── nyxelf.py
 ├── README.md
 ├── requirements.txt
@@ -116,12 +122,15 @@ Nyxelf/
 │   ├── bzImage
 │   └── rootfs.ext2
 └── src
+    ├── constructor.py
     ├── __init__.py
     ├── modules
     │   ├── anti_debug_apis.py
+    │   ├── decompile.py
     │   ├── __init__.py
     │   ├── __main__.py
     │   ├── packer_detection.py
+    │   ├── pseudocode.py
     │   ├── section_entropy.py
     │   └── variables.py
     ├── sandbox.py
@@ -131,7 +140,7 @@ Nyxelf/
 
 ## Roadmap
 
-- [ ] Decompiler and Disassembler Support
+- [x] Decompiler and Disassembler Support
 - [ ] Network Analysis
 - [ ] Better UI and Optimisation
 - [ ] Anti anti-debugging for ptrace etc.
@@ -139,7 +148,4 @@ Nyxelf/
 - [ ] Add Effective Logging
 
 ## License
-This project is licensed under the [MIT](https://choosealicense.com/licenses/mit/) License - see the [LICENSE.md](https://github.com/m3rcurylake/nyxelf/LICENSE.md) file for details
-
-
-
+This project is licensed under the [MIT](https://choosealicense.com/licenses/mit/) License - see the [LICENSE.md](https://github.com/m3rcurylake/nyxelf/LICENSE.md) file for details.
