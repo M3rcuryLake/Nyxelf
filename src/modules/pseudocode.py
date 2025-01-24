@@ -1,5 +1,6 @@
 import angr
 import struct
+import html
 
 
 def decompile(file):
@@ -12,7 +13,7 @@ def decompile(file):
     return dec.codegen.text
 
 def read_string(memory, addr):
-    """Read null-terminated string from memory."""
+    """Read and decode null-terminated strings"""
     s = b""
     while True:
         b = memory.load(addr, 1)
@@ -23,12 +24,19 @@ def read_string(memory, addr):
     return s.decode()
 
 def disassem_vars(file):
+
+    """Get Variable data from binary"""
+
     proj = angr.Project(file, auto_load_libs=False)
     var_str = []
     for section in proj.loader.main_object.sections:
         if "data" in section.name or "rodata" in section.name or "bss" in section.name:
             if section.name == ".rodata":
+
                 # strings
+                # document this part of the code
+                # fr man, i was away for few days nd i forgot how this shit works, awesome....
+
                 addr = section.vaddr
                 while addr < section.vaddr + section.memsize:
                     try:
@@ -39,7 +47,10 @@ def disassem_vars(file):
                         addr += 1
 
             elif section.name == ".data":
+
                 # integers
+                # document this part too :(
+
                 addr = section.vaddr
                 while addr < section.vaddr + section.memsize:
                     val = proj.loader.memory.load(addr, 4)
@@ -51,6 +62,4 @@ def disassem_vars(file):
 
 def construct_gen(file):
     sstr =  f"{disassem_vars(file)}\n\n\n{decompile(file)}"
-    return sstr
-
-#print(construct_gen('./test'))
+    return html.escape(sstr)
