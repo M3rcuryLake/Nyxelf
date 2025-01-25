@@ -144,7 +144,7 @@ Nyxelf/
 - [ ] Network Analysis
 - [ ] Better UI and Optimisation
 - [ ] Anti anti-debugging for ptrace etc.
-- [ ] Disassemble Pyinstaller files
+- [x] Detect Pyinstaller files
 - [ ] Add Effective Logging
 
 ## License

@@ -132,7 +132,7 @@ def show_analysis_window(file_path, title):
         file_path (str): Path to the file analyzed.
         title (str): Title of the web view window.
     """
-    webview.create_window(f'{title}: {file_path}', './frontend/static.html', maximized=True)
+    webview.create_window(f'{title}: {file_path}', './frontend/static.html', maximized=True, text_select=True)
     webview.start()
 
 def runner(file_path, max_length, title, trace_type, save_json, unpack):

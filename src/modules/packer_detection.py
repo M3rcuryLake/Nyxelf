@@ -1,6 +1,24 @@
 import subprocess
 import math
 
+def detect_pyinstaller(filename):
+        with open(filename, 'rb') as f:
+            data = f.read()
+        # PyInstaller markers
+        markers = [
+            b'pyiboot01_bootstrap',
+            b'pyimod',
+            b'PYZ-00',
+            b'_MEIPASS'
+        ]
+
+        for marker in markers:
+            if marker in data:
+                return f"Detected PyInstaller marker: {marker.decode('utf-8', 'ignore')}"
+            else:
+                return False
+
+
 def detect_packer(filename, use_unpacked):
         result = subprocess.run(['strings', filename], capture_output=True, text=True)
         strings = result.stdout.split(" ")
@@ -63,6 +81,10 @@ def detect_packer(filename, use_unpacked):
 
                 except:
                     print("[*] Cound not Unpack UPX file")
+        
+        elif detect_pyinstaller(filename):
+            pa_ = detect_pyinstaller(filename)
+
         else :
             if fileentropy > 6:
                 pa_ = "High Entropy detected: Possible encryption or packed sections detected."
