@@ -10,7 +10,7 @@
   
 ### _About_
   
-Nyxelf is a powerful tool for analyzing malicious Linux ELF binaries, offering both **static** and **dynamic** analysis. It combines tools like `readelf`, `objdump`, and `pyelftools` for static analysis with a custom sandbox for dynamic analysis in a controlled environment using QEMU, a minimal Buildroot-generated image,  and a combination of `valgrind`, `tcpdump` and `bpftrace`. Also it decompiles binary data to Assembly and C like pseudocode using `capstone`, `angr` and `radare2`. With Nyxelf, you can gain deep insights into executable files, including unpacking, syscall tracing, network, memory and process/file activity monitoring, all presented through an intuitive GUI powered by `pywebview`. 
+Nyxelf is a powerful tool for analyzing malicious Linux ELF binaries, offering both **static** and **dynamic** analysis. It combines tools like `readelf`, `objdump`, and `pyelftools` for static analysis with a custom sandbox for dynamic analysis in a controlled environment using QEMU, a minimal Buildroot-generated image,  and a combination of `valgrind`, `tcpdump` and `bpftrace` which is further enhanced by integrated AI-assisted summarization. Also it decompiles binary data to Assembly and C like pseudocode using `capstone`, `angr` and `radare2`. With Nyxelf, you can gain deep insights into executable files, including unpacking, syscall tracing, network, memory and process/file activity monitoring, all presented through an intuitive GUI powered by `pywebview`. 
 
 </div>
 </table>
