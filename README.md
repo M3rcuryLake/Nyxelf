@@ -16,8 +16,11 @@ Nyxelf is a powerful tool for analyzing malicious Linux ELF binaries, offering b
 </table>
 </tr>
 </td> 
-### *a working demo :*
-![Usage](https://github.com/M3rcuryLake/Cassette/blob/main/nyxelf-demo.gif)
+
+
+### _A simple working demo_ :
+
+![Usage](https://github.com/M3rcuryLake/Nyxelf/blob/main/nyxelf-demo.gif)
 
 ## Features:
 
@@ -66,8 +69,8 @@ python3 nyxelf.py --help
 ```
 
 ## *Want to build the images yourself?*
-I documented every hurdle and solution I encountered while compiling the kernel, including each modification made when a build failed. The build process alone took more than twenty hours in total, with repeated compilation and troubleshooting. This section is dedicated to nearly a week of intensive research, including browsing Buildroot's historical Git commits. For detailed instructions on compiling the custom Buildroot kernel and root filesystem used for sandbox analysis, make yourself a strong coffee and see the [BUILDROOT.md](https://github.com/m3rcurylake/nyxelf/BUILDROOT.md).
-The [configuration file](https://github.com/m3rcurylake/nyxelf/data/.config) for the buildroot is saved under the `data` directory as `.config`
+I documented every hurdle and solution I encountered while compiling the kernel, including each modification made when a build failed. The build process alone took more than twenty hours in total, with repeated compilation and troubleshooting. This section is dedicated to nearly a week of intensive research, including browsing Buildroot's historical Git commits. For detailed instructions on compiling the custom Buildroot kernel and root filesystem used for sandbox analysis, make yourself a strong coffee and see the [BUILDROOT.md](https://github.com/M3rcuryLake/Nyxelf/blob/main/BUILDROOT.md).
+The [configuration file](https://github.com/M3rcuryLake/Nyxelf/blob/main/data/.config) for the buildroot is saved under the `data` directory as `.config`
 
 
 ## Usage

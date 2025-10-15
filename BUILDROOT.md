@@ -3,7 +3,7 @@
 
 ## Purpose & Scope
 
-Provided along is a [.config](https://github.com/m3rcurylake/nyxelf/data/.config) file that produces an x86_64 Linux kernel and an ext2 root filesystem sized to ~340 MB, intended for sandbox analysis along with the Nyxelf of ELF binaries.  
+Provided along is a [.config](https://github.com/M3rcuryLake/Nyxelf/blob/main/data/.config) file that produces an x86_64 Linux kernel and an ext2 root filesystem sized to ~340 MB, intended for sandbox analysis along with the Nyxelf of ELF binaries.  
 The system is configured for dynamic and static instrumentation: BPF tooling, ftrace, debug symbols (DWARF4), BTF, user/kernel tracing, network capture utilities, and common runtime helpers (DHCP, network management, wireless support). This accompanying manual only documents them and gives concrete, minimal example commands.
 
 
