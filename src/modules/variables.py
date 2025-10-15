@@ -1,125 +1,111 @@
-from elftools.elf.elffile import ELFFile
-import subprocess
+import r2pipe
+import angr
+import json
 import struct
 
 
+def read_string(memory, addr):
+    """Read and decode null-terminated strings"""
+    s = b""
+    while True:
+        b = memory.load(addr, 1)
+        if b == b"\x00":
+            break
+        s += b
+        addr += 1
+    return s.decode()
 
-def str_break(string):
 
-    """Breaks a string into chunks of 20 characters for readability."""
-
-    spaced_string = []
-    for _ in range(0, len(string), 20):
-        spaced_string.append(string[_:_+20])
-
+def dbg_chk(r2):
+    r2.cmd("aaa")
+    sections = r2.cmdj("iSj")
+    debug_secs = [s for s in sections if s['name'].startswith('.debug')]
     
-    return ' '.join(spaced_string)
+    return debug_secs if debug_secs else False
 
 
-def extract_var_data(filename, ENDIAN):
+def globalv(r2):
 
-    """Extracts variable data from an ELF file, including address, size, and inferred values."""
+    '''
+    Runs a full analysis (`aaa`) to resolve symbols and relocations.
+    Filters symbols of type `OBJ` (radare2’s classification for global variables).
+    Ignores compiler-generated and bookkeeping symbols (e.g. those starting with `_` or named `completed.0`).
+    Reads the raw bytes at each symbol’s virtual address, then:
+      * If the size is **4 bytes**, unpacks it as a little-endian unsigned 32-bit integer (`<I`).
+      * If the size is **8 bytes**, unpacks it as a little-endian unsigned 64-bit integer (`<Q`).
+      * Otherwise, attempts to interpret the data as a UTF-8 string, falling back to raw bytes if decoding fails.
+    Returns a newline-separated string describing each variable
+    '''
 
-    if ENDIAN == "little":
-        prefix = "<"
-    if ENDIAN == "big":
-        prefix= ">"
+    gvars = ''
 
-    def get_var_addr(filename):
-        """Retrieves variable addresses and sizes using readelf."""
+    r2.cmd("aaa")
+    symbols = json.loads(r2.cmd("isj"))
 
-        command = f"readelf -s {filename} | grep 'OBJECT'"
-        process = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        stdout, stderr = process.communicate()
-        if stdout:
-            output = stdout.decode()
-        output = output.splitlines()
-        var_data =[]
+    for sym in symbols:
+        if sym.get("type") == "OBJ" and sym.get("name").startswith("_") != True and sym.get("name")!='completed.0':
+            name = sym.get("name")
+            addr = sym.get("vaddr")
+            size = sym.get("size", 0)
 
-        for _ in output:
-            _ = _.split(' ')
-            while '' in _ :
-                _.remove('')
-            if not _[-1].startswith('_') and _[-1]!='completed.0':
-                var_data.append(_)
-        return var_data
-        
-    def analyze_var(bytes_data, size, ENDIAN):
-        """
-            Analyses most significant byte to infer signed or unsigned values
-            if most_sig_byte == 0b10000000, it is most probably signed
+            # read raw bytes
+            raw = r2.cmdj(f"pxj {size} @ {addr}")
 
-            NOTE :  It does not explicitly say if the data is signed or not, but is accurate and consistent with results. Doesnt work with large numbers
-                    and some unsigned values using 'b10000000' in place of its most significant byte, and idk how to fix it :/
-        """
-
-        most_sig_byte = bytes_data[-1] if ENDIAN == 'little' else bytes_data[0]
-        signed_guess = most_sig_byte & 0x80 != 0 #checks if the bytes_data is potentially negative
-
-        if signed_guess:
-            signed_value = int.from_bytes(bytes_data, byteorder=ENDIAN, signed=True)    
-            unsigned_value = int.from_bytes(bytes_data, byteorder=ENDIAN, signed=False)
-            
-            if signed_value <= 0:
-                value = signed_value
+            val = None
+            if size == 4:
+                val = struct.unpack("<I", bytes(raw))[0]
+            elif size == 8:
+                val = struct.unpack("<Q", bytes(raw))[0]
             else:
-                value = unsigned_value  # Treat as unsigned
-        else:
-            value = int.from_bytes(bytes_data, byteorder=ENDIAN, signed=False)
-
-        return value
+                try:
+                    val = bytes(raw).decode(errors="ignore")
+                except:
+                    val = raw
     
+            gvars += f"[*] Addr: {hex(addr)} (.global)-> Name: {name:<5} Size: {size:<5} Value: {val}\n"
 
-    with open(filename, 'rb') as f:
-        elf = ELFFile(f)
-        
+    return gvars
 
-        data_list = [] 
-        for section in elf.iter_sections():
-            sh_addr = section['sh_addr']
-            sh_size = section['sh_size']
+def localv(file):
+    """Get Variable data from binary"""
 
-            for n in get_var_addr(filename):
-                address = int(n[1], 16)
-                size = int(n[2])
-                name = n[-1]
-                dump = {}
-            # Check if address falls in this section
-                if sh_addr <= address < sh_addr + sh_size:
-                    offset = address - sh_addr
-                    data = section.data()[offset:offset+size]
-                    
-                    dump['Variable Name'] = name
-                    dump['Address'] = hex(address)
-                    dump['Size'] = size
-                    dump['Hex Dump'] = str_break(data.hex())
-                    dump['ASCII Dump'] = str_break(data.decode(errors='ignore'))
-                    dump['Decimal'] = str_break(str(int(data.hex(), 16)))
+    proj = angr.Project(file, auto_load_libs=False)
+    var_str = []
+    for section in proj.loader.main_object.sections:
+        if "data" in section.name or "rodata" in section.name or "bss" in section.name:
+            if section.name == ".rodata":
 
-                    bytes_data = bytes.fromhex(data.hex())
+                '''
+                Scan .rodata section
+                .rodata typically stores read-only constants: C-strings, const arrays, etc.
+                We attempt to extract null-terminated ASCII/UTF-8 strings.
+                '''
 
-                    if size == 8:
-                        try:
-                            value = struct.unpack(prefix + 'd', bytes_data)[0] # Double
-                            if str(value) != 'nan':
-                                dump['Double'] = value
-                            value = analyze_var(bytes_data, size, ENDIAN) #int64
-                            #value = int.from_bytes(bytes_data, byteorder=ENDIAN, signed=False )
-                            dump['int_64'] = value
-                        except:
-                            pass
-                            
-                    if size == 4:
-                        try:
-                            value = struct.unpack(prefix + 'f', bytes_data)[0]  # Float
-                            if str(value) != 'nan':
-                                dump['Float'] = value
-                            value = analyze_var(bytes_data, size,  ENDIAN)  #int32
-                            #value = int.from_bytes(bytes_data, byteorder=ENDIAN, signed=False )
-                            dump['int32'] = value 
-                        except:
-                            pass
-  
-                    data_list.append(dump)
+                addr = section.vaddr
+                while addr < section.vaddr + section.memsize:
+                    try:
+                        s = read_string(proj.loader.memory, addr)
+                        lens = len(s)
+                        if lens != 0:
+                            var_str.append(f"[*] Addr: {hex(addr)} (.rodata)-> Size: {lens:<5} Value: {(s.encode('utf-8'))} ")
+                        addr += lens + 1
+                    except:
+                        addr += 1
 
-        return data_list
+    return '\n'.join(var_str)
+
+
+def disassem_vars(binary):
+
+    ''' Extract and display both global and local variable data from a binary. '''
+
+    vars = ''
+    r2 = r2pipe.open(binary, flags=["-e", "bin.cache=true"])
+    if dbg_chk(r2):
+        vars += "Debug Information Available\n"
+    vars += globalv(r2)
+    vars += localv(binary)
+    print('[*] Grabbed Variable Data')
+    return vars
+
+

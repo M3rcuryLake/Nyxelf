@@ -1,65 +1,66 @@
+import tempfile
+from typing import List
+
 import angr
-import struct
-import html
+from angr.analyses import CFGFast, Decompiler
+from angr.knowledge_plugins import Function
 
+import warnings
+warnings.filterwarnings('ignore')
 
-def decompile(file):
-    proj = angr.Project(file, auto_load_libs=False)
-    cfg = proj.analyses.CFGFast(normalize=True)
-    main = proj.kb.functions['main']
-    dec = proj.analyses.Decompiler(main, cfg=cfg.model)
-    print('[*] Generated C - Lang Pseudocode')
+def decompile(file_path):
 
-    return dec.codegen.text
+    """
+Decompile ELF binaries to C-like pseudocode using angr.
 
-def read_string(memory, addr):
-    """Read and decode null-terminated strings"""
-    s = b""
-    while True:
-        b = memory.load(addr, 1)
-        if b == b"\x00":
-            break
-        s += b
-        addr += 1
-    return s.decode()
+This script:
+  • Loads the target ELF binary into an angr Project
+  • Builds a fast control-flow graph (CFG) with CFGFast
+  • Recovers calling conventions and local variables
+  • Iterates over discovered non-PLT functions
+  • Decompiles each into a C-like representation and prints it
 
-def disassem_vars(file):
+Note:
+  – Adapted for educational/hobby-based use from angr-based tooling (e.g. the
+    approach used in Decompiler Explorer’s angr backend:
+    https://github.com/decompiler-explorer/decompiler-explorer)
+  – Provided as a demonstration of static decompilation with angr.
+  – Not an official part of angr or Decompiler Explorer.
+"""
 
-    """Get Variable data from binary"""
+    print('[*] Generating C-Language Pseudocode')
 
-    proj = angr.Project(file, auto_load_libs=False)
-    var_str = []
-    for section in proj.loader.main_object.sections:
-        if "data" in section.name or "rodata" in section.name or "bss" in section.name:
-            if section.name == ".rodata":
+    with open(file_path, 'rb') as f:
+        t = tempfile.NamedTemporaryFile()
+        t.write(f.read())
+        t.flush()
 
-                # strings
-                # document this part of the code
-                # fr man, i was away for few days nd i forgot how this shit works, awesome....
+    p = angr.Project(t.name, auto_load_libs=False, load_debug_info=False)
+    cfg = p.analyses.CFGFast(
+        normalize=True,
+        resolve_indirect_jumps=True,
+        data_references=True,
+    )
+    p.analyses.CompleteCallingConventions(
+        cfg=cfg.model, recover_variables=True, analyze_callsites=True
+    )
 
-                addr = section.vaddr
-                while addr < section.vaddr + section.memsize:
-                    try:
-                        s = read_string(proj.loader.memory, addr)
-                        var_str.append(f"/* Address: {hex(addr)} (.rodata)-> String: {s} */")
-                        addr += len(s) + 1
-                    except:
-                        addr += 1
+    funcs_to_decompile: List[Function] = [
+        func
+        for func in cfg.functions.values()
+        if not func.is_plt and not func.is_simprocedure and not func.is_alignment
+    ]
+    output = ''
+    for func in funcs_to_decompile:
+        try:
+            decompiler: Decompiler = p.analyses.Decompiler(func, cfg=cfg.model)
 
-            elif section.name == ".data":
+            if decompiler.codegen is None:
+                print(f"[*] No decompilation output for function {func.name}\n")
+                continue
+            output += decompiler.codegen.text
+        except Exception as e:
+            print(f"[*] Exception thrown decompiling function {func.name}: {e}")
 
-                # integers
-                # document this part too :(
-
-                addr = section.vaddr
-                while addr < section.vaddr + section.memsize:
-                    val = proj.loader.memory.load(addr, 4)
-                    int_val = struct.unpack("<I", val)[0]
-                    var_str.append(f"/* Address: {hex(addr)} (.data)-> Value: {int_val} */")
-                    addr += 4
-    print('[*] Grabbed Assembly Instructions')
-    return '\n'.join(var_str)
-
-def construct_gen(file):
-    sstr =  f"{disassem_vars(file)}\n\n\n{decompile(file)}"
-    return html.escape(sstr)
+    print('[*] Generation of C-Language Pseudocode Completed')
+    return output

@@ -1,5 +1,4 @@
 import subprocess
-import math
 
 def detect_pyinstaller(filename):
         with open(filename, 'rb') as f:
@@ -14,12 +13,14 @@ def detect_pyinstaller(filename):
 
         for marker in markers:
             if marker in data:
+                print(f"[*] Detected PyInstaller marker: {marker.decode('utf-8', 'ignore')}")
                 return f"Detected PyInstaller marker: {marker.decode('utf-8', 'ignore')}"
             else:
                 return False
 
 
 def detect_packer(filename, use_unpacked):
+        pa_ = ''
         result = subprocess.run(['strings', filename], capture_output=True, text=True)
         strings = result.stdout.split(" ")
 
@@ -40,40 +41,20 @@ def detect_packer(filename, use_unpacked):
             if any(item in strings for item in hex):
                 found.append(packer)
 
-        def calculate_entropy(data):
-            # Initialize a list to count byte frequencies (256 possible byte values)
-            byte_frequencies = [0] * 256
-            total_bytes = len(data)
-
-            for byte in data:
-                byte_frequencies[byte] += 1
-
-            # Shannon entropy calc:
-            entropy = 0
-            for count in byte_frequencies:
-                if count > 0:
-                    probability = count / total_bytes
-                    entropy -= probability * math.log2(probability)
-
-            return entropy
-
-        if use_unpacked == "y":
+        if use_unpacked:
             note = "Working with Unpacked file"
-        else :
+        if len(found)>1 :
             note = "Working with packed file"
+        else :
+        	note = "No Packer Found"
 
-
-
-        with open(filename, 'rb') as file:
-            data = file.read()
-        fileentropy = calculate_entropy(data)
 
 
         if len(found) > 0:
-            print(f"{filename} is packed with {', '.join(found)}, Entropy: {fileentropy:.4f}")
             pa_ = f"{filename} is packed with {', '.join(found)}"
 
             if 'UPX' in found and use_unpacked :
+                print("[*] Trying to unpack UPX Compressed binary ")
                 #TODO : Fix error handling for UPX files with manipulated hex data 
                 try:
                     subprocess.run(["upx", "-d", filename], check=True, stdout=subprocess.DEVNULL)
@@ -81,21 +62,16 @@ def detect_packer(filename, use_unpacked):
 
                 except:
                     print("[*] Cound not Unpack UPX file")
-        
-        elif detect_pyinstaller(filename):
-            pa_ = detect_pyinstaller(filename)
 
-        else :
-            if fileentropy > 6:
-                pa_ = "High Entropy detected: Possible encryption or packed sections detected."
-            else:
-                pa_ = f"{filename} is not packed with any packer"
-                
-                
+        pyInst = detect_pyinstaller(filename)
+        if pyInst:
+            pa_ = pyInst
 
-        return {"Packer Present" : pa_, "Entropy" : fileentropy, "Note" : note}
+
+        if pa_ == '':
+            pa_ = 'None'    
+                
+        return {"Packer" : pa_, "Note" : note}
     
 
-
-#detect_packer('../test_bin/datatypes')
 

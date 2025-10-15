@@ -1,3 +1,4 @@
+
 # Nyxelf
   
 ![Static Badge](https://img.shields.io/badge/made_by-m3rcurylake-orange?style=for-the-badge) ![GitHub License](https://img.shields.io/github/license/m3rcurylake/nyxelf?style=for-the-badge) ![GitHub Created At](https://img.shields.io/github/created-at/m3rcurylake/nyxelf?style=for-the-badge) ![GitHub last commit](https://img.shields.io/github/last-commit/m3rcurylake/nyxelf?style=for-the-badge) ![GitHub commit activity](https://img.shields.io/github/commit-activity/t/m3rcurylake/nyxelf?style=for-the-badge) ![GitHub Issues](https://img.shields.io/github/issues/M3rcurylake/nyxelf?style=for-the-badge)  ![GitHub Repo stars](https://img.shields.io/github/stars/M3rcurylake/nyxelf)
@@ -9,12 +10,14 @@
   
 ### _About_
   
-Nyxelf is a powerful tool for analyzing malicious Linux ELF binaries, offering both **static** and **dynamic** analysis. It combines tools like `readelf`, `objdump`, and `pyelftools` for static analysis with a custom sandbox for dynamic analysis in a controlled environment using QEMU, a minimal Buildroot-generated image, and `strace`. Also it decompiles binary data to Assembly and C like pseudocode using `capstone` and `angr`. With Nyxelf, you can gain deep insights into executable files, including unpacking, syscall tracing, and process/file activity monitoring, all presented through an intuitive GUI powered by `pywebview`. 
+Nyxelf is a powerful tool for analyzing malicious Linux ELF binaries, offering both **static** and **dynamic** analysis. It combines tools like `readelf`, `objdump`, and `pyelftools` for static analysis with a custom sandbox for dynamic analysis in a controlled environment using QEMU, a minimal Buildroot-generated image,  and a combination of `valgrind`, `tcpdump` and `bpftrace`. Also it decompiles binary data to Assembly and C like pseudocode using `capstone`, `angr` and `radare2`. With Nyxelf, you can gain deep insights into executable files, including unpacking, syscall tracing, network, memory and process/file activity monitoring, all presented through an intuitive GUI powered by `pywebview`. 
 
 </div>
 </table>
 </tr>
 </td> 
+### *a working demo :*
+![Usage](https://github.com/M3rcuryLake/Cassette/blob/main/nyxelf-demo.gif)
 
 ## Features:
 
@@ -25,21 +28,25 @@ Nyxelf is a powerful tool for analyzing malicious Linux ELF binaries, offering b
   
 - **Dynamic Analysis**:
   - Run binaries in a secure QEMU-based sandbox.
-  - Record process activity, syscalls, and file interactions with `strace`.
-  - Supports custom verbosity for syscall tracing.
+  - Memory and Network analysis with `valgrind` and `tcpdump`.
+  - Record process activity, syscalls, and file interactions with `bpftrace`.
+  - Supports custom verbosity and `bpf` scripts for syscall and kernal tracing.
+  - Generative AI based overview powered by g4f.
  
 - **Decompilation**:
-  - Decompiles binary to Assembly and C like pseudocode using `capstone` and `angr`.
+  - Decompiles binary to Assembly and C like pseudocode using `capstone`, `r2pipe` and `angr`.
   - Tries to retrive variable data from `.rodata` and `.data` sections.
-  - Uses `highlightjs`  CDNs for syntax highlighting.
 
 - **Other Features**:
   -  Optional automatic UPX unpacking.
-  - JSON output for automated workflows.
+  - Cooler Contrastive theme based around One-Dark and Binary Ninja.
   - Adjustable syscall trace verbosity and string length filtering.
+  - Option to either log to file or print to stdout.
+  - Uses `highlightjs`  CDNs for syntax highlighting.
+
 
 > [!NOTE]
-> JSON files and other logs are saved to `/data`, while the file-system and kernel image is saved to `/sandbox`. 
+> `pcap` files and other qemu logs are saved to `/data`, while the file-system and kernel and compressed filesystem image is saved to `/sandbox`.  
 
 
 ## System Dependencies:
@@ -47,16 +54,20 @@ Nyxelf is a powerful tool for analyzing malicious Linux ELF binaries, offering b
 **Install required packages**: Ensure you have python3 and python-pip installed and set to path and run the following commands, 
 
 ```bash
-sudo apt install qemu-kvm libvirt-daemon-system libvirt-clients bridge-utils virt-manager e2tools -y
+sudo apt install qemu-kvm libvirt-daemon-system libvirt-clients bridge-utils virt-manager e2tools p7zip -y
 git clone https://github.com/m3rcurylake/nyxelf.git
 cd nyxelf && pip install -r requirements.txt
+p7zip sandbox/rootfs.ext2.7z
 ```
-
 After everything is completely installed, you can run Nyxelf as following:
 
 ```bash
 python3 nyxelf.py --help
 ```
+
+## *Want to build the images yourself?*
+I documented every hurdle and solution I encountered while compiling the kernel, including each modification made when a build failed. The build process alone took more than twenty hours in total, with repeated compilation and troubleshooting. This section is dedicated to nearly a week of intensive research, including browsing Buildroot's historical Git commits. For detailed instructions on compiling the custom Buildroot kernel and root filesystem used for sandbox analysis, make yourself a strong coffee and see the [BUILDROOT.md](https://github.com/m3rcurylake/nyxelf/BUILDROOT.md).
+The [configuration file](https://github.com/m3rcurylake/nyxelf/data/.config) for the buildroot is saved under the `data` directory as `.config`
 
 
 ## Usage
@@ -64,7 +75,7 @@ python3 nyxelf.py --help
 To start analysing binaries, refer to the following help menu, or move to the project directory and type `python nyxelf.py --file FILE` in the terminal for a quick start, where `FILE` is the target binary. The output will be displayed in a new pywebview GUI window.
 
 ```
-python nyxelf.py [-h] [--unpack] [--json] --file FILE [--short] [--length LENGTH]
+usage: Nyxelf [-h] --file FILE [--unpack] [--genai] [--nettrace] [--syscall] [--kernel] [--logtofile]
 
  _____  ___    ___  ___   ___  ___    _______   ___         _______
 ("   \|"  \  |"  \/"  | |"  \/"  |  /"     "| |"  |       /"     "|
@@ -74,27 +85,28 @@ python nyxelf.py [-h] [--unpack] [--json] --file FILE [--short] [--length LENGTH
 |    \    \ |  /   /      /  \   \  (:      "| ( \_|:  \  (:  (
  \___|\____\) |___/      |___/\___|  \_______)  \_______)  \__/
 
-            [Another ELF Analysis Framework]
+                [Another ELF Analysis Framework]
 
 options:
-  -h, --help       show this help message and exit
-  --unpack         Attempt to unpack UPX file before analysis.
-  --json           Save JSON output of the analysis.
-  --file FILE      Path to the file to be analyzed.
-  --short          Use short trace output (hides args and reduces verbosity).
-  --length LENGTH  Maximum length of ASCII strings in strace output.
+  -h, --help   show this help message and exit
+  --file FILE  Path to the file to be analyzed.
+  --unpack     Attempt to unpack UPX-compressed binaries before analysis.
+  --genai      Invoke AI-assisted summarization for dynamic analysis.
+  --nettrace   Trace network activity using tcpdump during execution.
+  --syscall    List only syscall hits (suppress argument details).
+  --kernel     Show kernel tracepoints probed during execution.
+  --logtofile  Saves QEMU Logs to `qemu.logs` under ./data/, else prints to stdout.
 
-Nyxelf simplifies static and dynamic analysis of ELF binaries,
+Nyxelf is an unpredictable yet powerful "cutter" which
+simplifies static and dynamic analysis of ELF binaries,
 enabling you to extract valuable insights effortlessly.
-And can be used for vulnerability assessments, unpacking,
-syscall tracing, and memory analysis.
 
 Examples:
-  Analyze an ELF file statically and dynamically:
-    python3 nyxelf.py --file path/example.elf --json --unpack
+  Analyze an ELF file statically and dynamically and save the logs:
+    python3 nyxelf.py --file path/example --unpack --logtofile
 
-  Perform a detailed syscall trace with reduced verbosity:
-    python3 nyxelf.py --file path/example.elf --short --length 1024
+  Kernel and Network-level analysis with AI-assisted summarization for dynamic analysis:
+    python3 nyxelf.py --file path/example --genai --kernel --nettrace
 
 Happy analyzing!
 [&] https://github.com/m3rcurylake
@@ -104,45 +116,55 @@ Happy analyzing!
 
 ### File Structure
 ```
-Nyxelf/
-├── data
-│   └── readme.md
-├── frontend
-│   ├── assets
-│   │   ├── BebasNeue-Regular.ttf
-│   │   └── Nunito-Regular.ttf
-│   └── styles
-│       ├── disassembly.css
-│       └── static.css
+Nyxelf
+├── BUILDROOT.md
 ├── LICENSE
-├── nyxelf.py
 ├── README.md
+├── data
+│   └──.config
+├── frontend
+│   ├── package.json
+│   ├── src
+│   │   └── input.css
+│   ├── style
+│   │   ├── atom-one-dark-reasonable.css
+│   │   ├── highlight.min.js
+│   │   ├── style.css
+│   │   └── x86asm.min.js
+│   └── templates
+│       ├── dump.html
+│       ├── dyn.html
+│       └── static.html
+├── nyxelf.py
 ├── requirements.txt
 ├── sandbox
 │   ├── bzImage
-│   └── rootfs.ext2
-└── src
-    ├── constructor.py
-    ├── __init__.py
-    ├── modules
-    │   ├── anti_debug_apis.py
-    │   ├── decompile.py
-    │   ├── __init__.py
-    │   ├── __main__.py
-    │   ├── packer_detection.py
-    │   ├── pseudocode.py
-    │   ├── section_entropy.py
-    │   └── variables.py
-    ├── sandbox.py
-    ├── static_analysis.py
-    └── trace_parser.py
+│   └── rootfs.ext2.7z
+├── src
+│   ├── __init__.py
+│   ├── modules
+│   │   ├── __init__.py
+│   │   ├── __main__.py
+│   │   ├── ai_overview.py
+│   │   ├── anti_debug_apis.py
+│   │   ├── disassemble.py
+│   │   ├── packer_detection.py
+│   │   ├── pseudocode.py
+│   │   └── variables.py
+│   ├── pcap_parser.py
+│   ├── sandbox.py
+│   └── static_analysis.py
+└── tracers
+    ├── default.sh
+    ├── kernel.sh
+    └── syscall.sh
 ```
 
 ## Roadmap
 
 - [x] Decompiler and Disassembler Support
-- [ ] Network Analysis
-- [ ] Better UI and Optimisation
+- [x] Network Analysis
+- [x] Better UI and Optimisation
 - [ ] Anti anti-debugging for ptrace etc.
 - [x] Detect Pyinstaller files
 - [ ] Add Effective Logging

@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Nyxelf</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="description" content="" />
+<link rel="stylesheet" href="./style/style.css">
+<link rel="stylesheet" href="./style/atom-one-dark-reasonable.css">
+<script src="./style/highlight.min.js"></script>
+<script>hljs.highlightAll();</script>
+  <link rel="icon" href="favicon.png">
+</head>
+<body style="">
+  <div id="fadein"></div>
+
+    <div class="h-screen w-screen bg-[#1e1e1e] text-gray-200 font-mono text-sm">
+  <div class="flex h-full">
+    <aside class="w-100 bg-[#202020] border-r border-gray-700 overflow-y-auto">
+      <div class="p-2 mt-8">
+        <h2 class="text-gray-400 text-base underline decoration-slate-500 mb-2 mt-5 p-2">[+] symbols</h2>
+        <ul class="space-y-1 overflow-y-scroll h-90 no-scrollbar">
+$symbol_table
+        </ul>
+      <div class="p-2">
+        <h2 class="text-gray-400 text-base underline decoration-slate-500 mb-2 mt-5 p-2">[+] dynamic symbols</h2>
+        <ul class="space-y-1 overflow-y-scroll h-90 no-scrollbar">
+$dynsym_table
+        </ul>
+      </div>
+    </aside>
+
+    <!-- Main Panel -->
+    <main class="flex-1 p-4 space-y-4 overflow-y-auto">
+      <div class="mt-10">
+<div class="container flex flex-wrap items-center justify-between mx-auto text-slate-800">
+    <p   
+      class="mr-4 block cursor-pointer text-slate-200 py-1.5 text-xl font-semibold">
+      Nyxelf : The Unreliable Cutter...
+    </p>
+    <div class="hidden lg:block">
+      <ul class="flex flex-col gap-2 mt-2 mb-4 lg:mb-0 lg:mt-0 lg:flex-row lg:items-center lg:gap-6 text-base">
+        <li class="flex items-center p-1 gap-x-2 text-amber-500">
+          <a href="dyn.html" class="flex items-center">(Dynamic-Analysis)</a>
+        </li>
+        <li class="flex items-center p-1 gap-x-2 text-amber-500">
+          <a href="static.html" class="flex items-center">(Static-Analysis)</a>
+        </li>
+        <li class="flex items-center p-1 gap-x-2 text-amber-500">
+          <a href="dump.html" class="flex items-center">(Assembly-Dump)</a>
+        </li>
+      </ul>
+    </div>
+</div>
+          
+
+        <div class="h-6 bg-gradient-to-r from-purple-900 via-indigo-700 to-gray-800 rounded"></div>
+      </div>
+
+      <!-- File Info -->
+      <div class="bg-[#242424] rounded border border-gray-700 p-4 space-y-2">
+        <h3 class="text-gray-400 text-xs mb-5 underline decoration-slate-500 uppercase tracking-wide">File Info</h3>
+        <div class="grid grid-cols-2 gap-x-6 text-sm">
+            $fi_table
+          <!-- ... -->
+        </div>
+      </div>
+
+      <!-- Headers -->
+      <div class="bg-[#242424] rounded border border-gray-700 p-4">
+        <h3 class="text-gray-400 text-xs mb-5 underline decoration-slate-500 uppercase tracking-wide">Headers</h3>
+        <div class="grid grid-cols-3 gap-2 text-xs">
+$header_table
+          <!-- ... -->
+        </div>
+      </div>
+    <div class="bg-[#242424] rounded border border-gray-700 pt-2 flex">
+    <div class="mb-8">
+      <div style="background :#282c34" class="ml-10 px-2 text-white font-light italic py-1 font-Mono max-w-fit px-4 rounded-t-lg mt-2">functions</div> 
+
+<pre style="background: #282c34;" class="ml-10 text-sm rounded-b-lg overflow-y-scroll overflow-x-scroll no-scrollbar h-90 max-w-lg">
+  <code class="-mt-5 language-javascript no-scrollbar">
+ $function_table
+    </code>
+  </pre>
+</div>
+    <div>
+      <div style="background :#282c34" class="ml-5 px-2 text-white font-light italic py-1 font-Mono max-w-fit px-4 rounded-t-lg mt-2">sections</div> 
+
+<pre style="background: #282c34;" class="ml-5 text-sm rounded-b-lg overflow-y-scroll overflow-x-scroll no-scrollbar h-90 max-w-lg">
+  <code class="-mt-5 language-javascript no-scrollbar">
+$section_table
+    </code>
+  </pre>
+</div>
+<div>
+      <div style="background :#282c34" class="ml-5 px-2 text-white font-light italic py-1 font-Mono max-w-fit px-4 rounded-t-lg mt-2">variables</div> 
+
+<pre style="background: #282c34;" class="ml-5 text-sm rounded-b-lg overflow-y-scroll overflow-x-scroll no-scrollbar h-90 w-110">
+  <code class="-mt-5 language-javascript no-scrollbar">
+$variable_table
+    </code>
+  </pre>
+</div>
+    </div>
+    </main>
+  </div>
+</div>
+
+
+<style>
+    /* For best practice, move CSS below to an external CSS file. */
+        .no-scrollbar::-webkit-scrollbar {
+        display: none; /* For Chrome, Safari, and Opera */
+    }
+
+    .no-scrollbar {
+        -ms-overflow-style: none;  /* For Internet Explorer and Edge */
+        scrollbar-width: none;  /* For Firefox */
+    }
+
+    @keyframes fadeinall {
+    0% {
+      opacity: 1; }
+    97% {
+      opacity: 0; }
+    98% {
+      opacity: 0;
+      -webkit-transform: translateY(0);
+      transform: translateY(0); }
+    100% {
+      opacity: 0;
+      -webkit-transform: translateY(-100%);
+      transform: translateY(-100%);
+      z-index: -1; } }
+    #fadein {
+      opacity: 1;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      -webkit-transform: translateY(0);
+      -ms-transform: translateY(0);
+      transform: translateY(0);
+      background-color: #FFFFFF;
+      z-index: 999;
+      -webkit-animation-fill-mode: forwards;
+      animation-fill-mode: forwards;
+      -webkit-animation: fadeinall 1s normal both;
+      animation: fadeinall 1s normal both;
+      -webkit-animation-delay: 0.3s;
+      animation-delay: 0.3s; }
+  </style>
+  <script type="text/javascript">
+  window.onload = function(){
+    setTimeout(function(){
+      document.getElementById("fadein").remove();
+    },1000);
+  };
+  </script>
+
+
+
+</body>
+</html>
+
+

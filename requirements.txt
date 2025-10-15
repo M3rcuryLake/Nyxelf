@@ -1,7 +1,9 @@
 angr
+r2pipe
 capstone
 pexpect
-json2html
 pywebview
 pyelftools
 python-ptrace
+markdown
+scapy
