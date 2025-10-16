@@ -28,7 +28,7 @@ These are the important Buildroot `menuconfig` and `linux-menuconfig` selections
     -   `strace` — syscall tracing for userland processes.
     -   `tcpdump` — pcap capture for network traffic capture.
     -   `dhcpcd`, `network-manager`, `wpa_supplicant` — networking stack clients to obtain IP via DHCP and manage wireless connections inside the guest.
-    -   *Lightning library* (selected to fix `libsframe.so.1`-type issues I kept running into issues) — ensures required runtime libs are present for certain analysis tools.        
+    -   *Lightning library* (selected to fix `libsframe.so.1`-type issues I kept running into.) — ensures required runtime libs are present for certain analysis tools.        
 -   **Filesystem**  
     `ext2` chosen as the rootfs format with a *maximum* size ~340 MB. Ext2 is simple to mount and debug; no journal reduces write amplification and simplifies snapshotting in sandboxes.
     
@@ -57,8 +57,8 @@ These are the important Buildroot `menuconfig` and `linux-menuconfig` selections
 
 ### _Mount-Based File Sync System:_
 At first I was using a simple `subprocesses.run()` system which used `e2cp` to copy .pcap files from the filesystem image, but I faced a constant issue. Tcpdump buffers packet data in memory for performance reasons and writes at once. When `pexpect` sends commands it doesn’t “gracefully” stop background processes like `tcpdump`.  If the script terminates `tcpdump` with a forceful signal, the process never executes its cleanup routine that writes the `.pcap` and flushes the capture count summary. That’s why my manual runs worked perfectly, but automated runs didn’t.
-To bridge this gap, QEMU provides a *mount-based shared filesystem mechanism* with the *VirtFS (9p filesystem)* protocol using the `-virtfs` flag.
-finally to connect the shared directory I used the following commands inside the guest.
+To bridge this gap, QEMU provides a *mount-based shared filesystem mechanism* with the *VirtFS (9p filesystem)* protocol. Using the `-virtfs` flag, i was
+finally able to connect the shared directory I used the following commands inside the guest.
 ```bash
 mkdir -p /mnt/host_trace 
 mount -t 9p -o trans=virtio,version=9p2000.L host_trace /mnt/host_trace
