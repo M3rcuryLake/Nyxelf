@@ -7,3 +7,4 @@ pyelftools
 python-ptrace
 markdown
 scapy
+g4f
