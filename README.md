@@ -49,7 +49,7 @@ Nyxelf is a powerful tool for analyzing malicious Linux ELF binaries, offering b
 
 
 > [!NOTE]
-> `pcap` files and other qemu logs are saved to `/data`, while the file-system and kernel and compressed filesystem image is saved to `/sandbox`.  
+> `pcap` files and other qemu logs are saved to `/data`, while the kernel and compressed filesystem image is saved to `/sandbox`.  
 
 
 ## System Dependencies:
