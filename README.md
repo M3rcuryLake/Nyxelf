@@ -172,5 +172,15 @@ Nyxelf
 - [x] Detect Pyinstaller files
 - [ ] Add Effective Logging
 
+## Known Issues and Contribution.
+- **`tcpdump` dropping `ICMP`, `ARP` etc ** : tcpdump running inside the guest shows no ICMP and ARP packets even when programs like `ping` or `traceroute` are run, forming PCAP files lacking reliable information. This may be caused by the choice of the networking. According to research, the current `qemu` command doesn’t actually define any explicit network backend, which means `qemu` silently defaults to:
+    ```
+    -netdev user,id=net0 -device e1000,netdev=net0
+    ```
+That’s user-mode networking (NATed), and it only forwards TCP/UDP connections, fakes DNS and DHCP, and drops raw protocols like ICMP or ARP.
+A fix for this would be using TAP or SLiRP with packet passthrough as TAP provides a real Layer-2 interface that behaves like a proper NIC, which helps in capturing the network and application layer activity.
+
+- **Stdin deadlock in sandbox** : Binaries that use reads from the TTY or otherwise expect a TTY-based interactive stdin, the process appears to hang, crash, or exit with EOF/SIGSEGV when run under the sandboxed environment when run under tracing tools. This may happen due to `bpftrace` waiting for a stdin input and `pexpect` getting a wrong read like `"Enter a number :"` instead of `# ` therefore. A proper fix to this would be to add an option to support secondary inputs, though you can overcome this with a bit of shell magic or using some sort of wrapper, it would add unwanted noise in the bpftrace output and anyways, anyone would want maximum support. So letting reverse engineers to make the most out of it by adding the option to supply the binary with custom inputs or random gibberish, or letting them choose which signal (`SIGTERM`, `SIGKILL`, etc) they want to send to the running process after analysis ran for a certain timeframe, would be the way to go.
+
 ## License
 This project is licensed under the [MIT](https://choosealicense.com/licenses/mit/) License - see the [LICENSE.md](https://github.com/m3rcurylake/nyxelf/LICENSE.md) file for details.
