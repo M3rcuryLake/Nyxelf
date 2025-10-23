@@ -175,10 +175,10 @@ Nyxelf
 ## Known Issues and Contribution.
 _**TCPdump Dropping `ICMP`, `ARP` etc**_ : tcpdump running inside the guest shows no ICMP and ARP packets even when programs like `ping` or `traceroute` are run, forming PCAP files lacking reliable information. This may be caused by the choice of the networking. According to research, the current `qemu` command doesn’t actually define any explicit network backend, which means `qemu` silently defaults to:
 
-    ```
+  ```
     -netdev user,id=net0 \
     -device e1000,netdev=net0
-    ```
+  ```
 
 That’s user-mode networking (NATed), and it only forwards TCP/UDP connections, fakes DNS and DHCP, and drops raw protocols like ICMP or ARP.
 A fix for this would be using TAP or SLiRP with packet passthrough as TAP provides a real Layer-2 interface that behaves like a proper NIC, which helps in capturing the network and application layer activity.
